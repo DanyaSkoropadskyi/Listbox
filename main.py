@@ -1,62 +1,31 @@
-import tkinter as tk
-from tkinter import messagebox
-import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-import random
+from tkinter import *
 
-class TemperatureApp:
-    def __init__(self, root):
-        self.root = root
-        self.root.title("Метереологічні дослідження")
-        self.root.geometry("500x400")
+def calculate_frequencies():
+    text = Txt.get("1.0", 'end-1c')
+    Lbox1.delete(0, END)
+    Lbox2.delete(0, END)
+    total_chars = len(text)
+    count_a = text.count('а')
+    Lbox1.insert(END, count_a)
+    if total_chars > 0:
+        freq = count_a / total_chars
+        Lbox2.insert(END, "{:.3f}".format(freq))
 
-        self.temperatures = []
+tk = Tk()
+tk.title("Символьний калькулятор")
+tk.geometry("440x280")
 
-        label = tk.Label(root, text="Введіть температури протягом тижня (через кому):")
-        label.pack(pady=10)
+Lbl1 = Label(text="Введіть текст")
+Lbl1.place(x=20, y=20)
+Txt = Text(wrap=WORD)
+Txt.place(x=20, y=50, width=120, height=160)
+Btn = Button(text="Обчислити", command=calculate_frequencies)
+Btn.place(x=160, y=20)
+Lbox1 = Listbox()
+Lbox1.place(x=160, y=50, width=120, height=160)
+Lbl3 = Label(text="Частота входжень")
+Lbl3.place(x=300, y=20)
+Lbox2 = Listbox()
+Lbox2.place(x=300, y=50, width=120, height=160)
 
-        self.entry = tk.Entry(root)
-        self.entry.pack(pady=5)
-
-        self.btn = tk.Button(root, text="Побудувати", command=self.build_graph)
-        self.btn.pack(pady=5)
-
-        self.fig, self.ax = plt.subplots()
-        self.canvas = FigureCanvasTkAgg(self.fig, master=root)
-        self.canvas_widget = self.canvas.get_tk_widget()
-        self.canvas_widget.pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
-
-    def build_graph(self):
-        self.ax.clear()  # Очистка графіка перед побудовою нового
-
-        try:
-            self.temperatures = [int(temp.strip()) for temp in self.entry.get().split(",")]
-            days = list(range(1, len(self.temperatures) + 1))
-
-            # Побудова графіка
-            self.ax.plot(days, self.temperatures, marker='o', linestyle='-')
-
-            # Позначення максимальної та мінімальної температур
-            max_temp = max(self.temperatures)
-            min_temp = min(self.temperatures)
-            self.ax.plot(days[self.temperatures.index(max_temp)], max_temp, marker='o', markersize=8, color='red')
-            self.ax.plot(days[self.temperatures.index(min_temp)], min_temp, marker='o', markersize=8, color='green')
-
-            # Налаштування графіка
-            self.ax.set_xlabel('Дні тижня')
-            self.ax.set_ylabel('Температура, °C')
-            self.ax.set_title('Температури протягом тижня')
-
-            # Оновлення графіка
-            self.canvas.draw()
-
-            # Показ повідомлення з інформацією про максимальну та мінімальну температуру
-            messagebox.showinfo("Інформація", f"Максимальна температура: {max_temp} °C\nМінімальна температура: {min_temp} °C")
-
-        except ValueError:
-            messagebox.showerror("Помилка", "Будь ласка, введіть коректні числа для температур")
-
-if __name__ == "__main__":
-    root = tk.Tk()
-    app = TemperatureApp(root)
-    root.mainloop()
+tk.mainloop()
